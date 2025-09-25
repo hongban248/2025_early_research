@@ -1,0 +1,7 @@
+{
+    "jupyter.interactiveWindow.textEditor.executeSelection": false,
+    "python.experiments.optOutFrom": ["pythonTerminalEnvVarActivation"]
+
+    
+
+}
