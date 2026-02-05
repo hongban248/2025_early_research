@@ -235,3 +235,4 @@ c
 重做了，code/part_2/pymultinest_01_test.py
 结果存在code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy和bt-settle_full.npy
 共44个模型
+code/part_2/pymultinest_02_test.py也跑出来了
