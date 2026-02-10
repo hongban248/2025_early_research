@@ -13,7 +13,7 @@ from scipy.ndimage import gaussian_filter1d
 from scipy.signal import fftconvolve
 import coronagraph as cg
 
-def parament_to_filename(teff, logg, meta, alpha, mapfilepath="models/bt-settle/map"):
+def parament_to_filename(teff, logg, meta,  mapfilepath="models/bt-settle/map"):
     """
     将给定的teff、logg、meta和alpha参数转换为对应的txt文件名格式。
     
@@ -23,6 +23,13 @@ def parament_to_filename(teff, logg, meta, alpha, mapfilepath="models/bt-settle/
         meta (float): 金属丰度。
         alpha (float): α元素丰度。舍弃
     """
+    if meta == 0.0 or meta==0.3 or meta==0.5:
+        alpha = 0.0  # 将alpha设置为0.0，确保格式正确
+    elif meta == -0.5:
+        alpha = 0.2
+    elif meta == -1.0:
+        alpha = 0.4
+
     map_name="btsettl_T{:.0f}_lg{:.1f}_m{:.1f}_a{:.1f}.map".format(teff, logg, meta, alpha)
     map_file_path=os.path.join(mapfilepath, map_name)
     #print(map_file_path)
@@ -31,7 +38,7 @@ def parament_to_filename(teff, logg, meta, alpha, mapfilepath="models/bt-settle/
         text=f.readlines()
         f.close()
         file_path=text[0].strip()
-        print("存在的文件名为：", map_file_path)
+        #print("存在的文件名为：", map_file_path)
         return file_path
     else:
         print("文件不存在：", map_file_path)
@@ -253,15 +260,15 @@ if 1:
     ## 2.1 parameter space #方阵
     teff_grid_points = np.array( list(np.arange(3000, 4001,100)) )
     logg_grid_points = np.arange(3, 5.51, 0.5)
-    meta_grid_points = np.array( [ -0.5] )#guid
-    alpha_grid_points = np.array( [0.2] )#改为动态调整
+    meta_grid_points = np.array( [0.0, 0.3,0.5,-0.5,-1] ) 
+    #alpha_grid_points = np.array( [0.2] )#改为动态调整
     # vr_grid_points = np.array( [0.0, 2.0, 4.0] ) #vr,vsini无需grid，可以连续变化的量
     # vsini_grid_points = np.array( [0.0, 5.0, 10.0] )
     #只关注模型参数teff,logg,meta的方阵，不考虑vr,vsini，R的方阵
     num_teff_points = len(teff_grid_points)
     num_logg_points = len(logg_grid_points)
     num_meta_points = len(meta_grid_points)
-    num_alpha_points = len(alpha_grid_points)
+    #num_alpha_points = len(alpha_grid_points)
     # num_vr_points = len(vr_grid_points)
     # num_vsini_points = len(vsini_grid_points)
     # print("%d teff points"%(num_teff_points))
@@ -276,11 +283,11 @@ if 1:
     for teff in teff_grid_points:
         for logg in logg_grid_points:
             for meta in meta_grid_points:
-                for alpha in alpha_grid_points:
+                #for alpha in alpha_grid_points:
                     # for vr in vr_grid_points:
                     #     for vsini in vsini_grid_points:
 
-                            grid_point_list.append([teff, logg, meta, alpha])
+                            grid_point_list.append([teff, logg, meta])
     num_grid_points = len(grid_point_list)
     print("%d grid points in total"%(num_grid_points))
     ## 2.3 create empty arrays
@@ -290,9 +297,9 @@ if 1:
 
     for index in range(num_grid_points):  #为了获取num_full
         # 2.4.1 load file
-        teff_val, logg_val,meta_val,alpha_val = grid_point_list[index]
+        teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
-        file_path=parament_to_filename(teff_val, logg_val, meta_val,alpha_val)
+        file_path=parament_to_filename(teff_val, logg_val, meta_val)
         raw_wl_mod,raw_fl_mod=get_cut(file_path)
         num_full=len(raw_wl_mod)
         break
@@ -305,9 +312,9 @@ if 1:
     num=0
     for index in range(num_grid_points):
         # 2.4.1 load file
-        teff_val, logg_val,meta_val,alpha_val = grid_point_list[index]
+        teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
-        file_path=parament_to_filename(teff_val, logg_val, meta_val,alpha_val)
+        file_path=parament_to_filename(teff_val, logg_val, meta_val)
         raw_wl_mod,raw_fl_mod=get_cut(file_path)  #先转换真空波长，再降低分辨率
         #raw_wl_mod = mod_reader[:,0]
         raw_fl_mod = (raw_fl_mod * u.erg / u.s / u.cm**2 / u.Angstrom).to(u.erg / u.s / u.cm**2 / u.Angstrom).value
