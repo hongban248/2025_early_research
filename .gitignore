@@ -5,3 +5,4 @@ infrared/*
 dc/
 dc/*
 code/outcome/bt-settle_full.npy
+code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy
