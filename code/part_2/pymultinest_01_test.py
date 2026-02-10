@@ -252,9 +252,9 @@ if 1:
     ### 2. load BT-Settl models
     ## 2.1 parameter space #方阵
     teff_grid_points = np.array( list(np.arange(3000, 4001,100)) )
-    logg_grid_points = np.arange(4, 5.51, 0.5)
-    meta_grid_points = np.array( [ -0.5] )
-    alpha_grid_points = np.array( [0.2] )#应该给一个固定值
+    logg_grid_points = np.arange(3, 5.51, 0.5)
+    meta_grid_points = np.array( [ -0.5] )#guid
+    alpha_grid_points = np.array( [0.2] )#改为动态调整
     # vr_grid_points = np.array( [0.0, 2.0, 4.0] ) #vr,vsini无需grid，可以连续变化的量
     # vsini_grid_points = np.array( [0.0, 5.0, 10.0] )
     #只关注模型参数teff,logg,meta的方阵，不考虑vr,vsini，R的方阵
@@ -308,7 +308,7 @@ if 1:
         teff_val, logg_val,meta_val,alpha_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
         file_path=parament_to_filename(teff_val, logg_val, meta_val,alpha_val)
-        raw_wl_mod,raw_fl_mod=get_cut(file_path)
+        raw_wl_mod,raw_fl_mod=get_cut(file_path)  #先转换真空波长，再降低分辨率
         #raw_wl_mod = mod_reader[:,0]
         raw_fl_mod = (raw_fl_mod * u.erg / u.s / u.cm**2 / u.Angstrom).to(u.erg / u.s / u.cm**2 / u.Angstrom).value
         #这一步要把模型的单位转换为数据的单位
@@ -317,7 +317,8 @@ if 1:
         #fl_mod = cg.downbin_spec(raw_fl_mod, raw_wl_mod, wl_mod, dlam=dwl_mod)
         wl_mod,fl_mod=raw_wl_mod,raw_fl_mod #get_cut(file_path)已经降分辨率了
 
-        wl_mod=air_to_vacuum(wl_mod*1e4)/1e4  #转换为真空波长
+        wl_mod=air_to_vacuum(wl_mod*1e4)/1e4  #转换为真空波长coconut
+        #在把模型插值波长转换到coconut-2a上，H，K分开做
 
         # wl_mod=vr_change_c(wl_mod,fl_mod,vr_val)  #视向速度修正
         # fl_mod=rot_int_cmj_c(wl_mod,fl_mod,vsini_val)  #旋转变宽

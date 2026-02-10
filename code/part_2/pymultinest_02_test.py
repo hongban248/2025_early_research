@@ -110,6 +110,7 @@ def find_insert_position(arr, target):
     # 如果未找到目标数字，left 的位置即为插入位置
     return left
 
+r_sun=6.957e10  # cm
 
 ## 5.1 parameters
 parameters = ['Teff', 'logg','meta','alpha','vr','vsini']
@@ -122,14 +123,14 @@ logg_min = 4    #3到5.5，guidpoint也要加3-5.5
 logg_max = 5.5
 meta_min = -0.5
 meta_max = -0.5
-alpha_min = 0.2
+alpha_min = 0.2 #改
 alpha_max = 0.2
-vr_min = 0.0
+vr_min = 0.0  #-30----+30
 vr_max = 4.0
-vsini_min = 0.0 
+vsini_min = 0.0 # 0-30
 vsini_max = 10.0
 # radius_min = 0.2  #注意这里是Rsun，不是Rjup
-# radius_max = 0.8
+# radius_max = 0.6# 使用了mamajek table来估计半径范围
 
 def prior(cube, ndim, nparams):
     cube[0] = teff_min + (teff_max - teff_min) * cube[0]
@@ -144,11 +145,12 @@ def prior(cube, ndim, nparams):
 grid_points = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy', allow_pickle=True)
 fl_mod_spec_combo = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[1:]
 
+#更新过后跑3中模拟，H，K，H+K
 K_path='code/part_2/data_for_part2/K_BC.txt'
 wavelength_K,flux_K,error_K=get_txt(K_path)
 
 ### 6. log-likelihood
-def loglike(cube, ndim, nparams):
+def loglike_H(cube, ndim, nparams):
     ## 6.1 current parameters
     teff = cube[0]
     logg = cube[1]
@@ -166,11 +168,18 @@ def loglike(cube, ndim, nparams):
                                  method = 'linear',
                                  fill_value = np.nan).reshape(-1)
     # 6.2.2 scaling by radius
-    #fl_mod_spec = fl_mod_spec * (radius * nc.r_jup / distance)**2
+    fl_mod_spec = fl_mod_spec * (radius * r_sun / distance)**2  #距离10.88秒差距转换成厘米
     # => incorporate vr and vsini
     wl_mod=vr_change(wl_mod,fl_mod_spec,vr)  #视向速度修正
     fl_mod_spec=rot_int_cmj(wl_mod,fl_mod_spec,vsini)  #旋转变宽
     #额外插值，再把模型wave转到数据wave上   先只fits H band
+    #########################################################################
+
+
+    
+
+
+    print(len(fl_mod_spec),len(flux_K))
     # 6.2.3 likelihood 把模型和数据对比 flf2，err其实就是数据
     #spec_sigma_squared = flerr_f2**2 + 10**log10b_spec
     spec_sigma_squared= error_K**2
@@ -178,6 +187,12 @@ def loglike(cube, ndim, nparams):
     ## 6.4 final likelihood
     #return spec_logl + phot_w1_logl + phot_w2_logl + phot_irac36_logl + phot_irac45_logl
     return spec_logl
+
+def loglike_K():
+    return 0.0
+
+def loglike():
+    return loglike_H()+loglike_K()
 
 
 import time
@@ -270,11 +285,11 @@ if __name__ == "__main__":
 
     output_path='code/part_2/outcome_for_part2/pymultinest_outcome/'
     n_params = len(parameters)
-    json.dump(parameters, open(output_path + '_%s_params.json'%(time.time()), 'w'))
+    json.dump(parameters, open(output_path + '_%s_params.json'%(str(time.time())), 'w'))
     pymultinest.run(loglike, prior, n_params, 
                     outputfiles_basename=output_path+'bt-settle-test-',
                     resume = True, verbose = True,
-                    n_live_points = 400,
+                    n_live_points = 4000, #越多越好 400测试，一般2000-4000
                     sampling_efficiency = 0.8,
                     const_efficiency_mode=False)
     

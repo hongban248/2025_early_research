@@ -20,7 +20,7 @@ def parament_to_filename(teff, logg, meta, alpha, mapfilepath="models/bt-settle/
         text=f.readlines()
         f.close()
         file_path=text[0].strip()
-        print("存在的文件名为：", map_file_path)
+        #print("存在的文件名为：", map_file_path)
         return file_path
     else:
         print("文件不存在：", map_file_path)
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #     print("对应的文件名为：", filename)
     #方阵检查
     teff_grid_points = np.array( list(np.arange(3000, 4001,100)) )
-    logg_grid_points = np.arange(4, 5.51, 0.5)
+    logg_grid_points = np.arange(3, 5.51, 0.5)
 
 
     meta_grid_points = np.array( [0.0, 0.3,0.5] )  #组合1
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     #组合2(之前工作最接近)
     meta_grid_points = np.array( [ -0.5] )  #组合2
-    alpha_grid_points = np.array( [0.2] )
+    alpha_grid_points = np.array( [ 0.2] )
 
     
 

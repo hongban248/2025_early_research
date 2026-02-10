@@ -236,3 +236,24 @@ c
 结果存在code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy和bt-settle_full.npy
 共44个模型
 code/part_2/pymultinest_02_test.py也跑出来了
+
+
+2.5还是希望meta是一个guid，但alpha对应内嵌固定下来
+logg 3-5.5
+raw_wl_mod,raw_fl_mod=get_cut(file_path)  #先转换真空波长，再降低分辨率
+
+最后再存三套模型矩阵，H，K，H+K
+
+log likelyhood#再额外插值，再把模型wave转到数据wave上
+
+学习corner.py，画出code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle-test-post_equal_weights.dat的分布，画一个7*7的图，H，K，H+K都画，
+
+看那一行对应loglikehood最大，即为最大似然值，画出插值后的最好模型和数据对比图
+
+考虑别的2套模型
+
+之后考虑加入covariance matrix
+
+
+
+
