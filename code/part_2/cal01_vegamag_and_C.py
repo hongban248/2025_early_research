@@ -112,7 +112,7 @@ filter_path_K='datas/20240203_0071/filters/2MASS_2MASS.Ks.dat'
 
 txt_path_M3='models/other_V/AD_Leo_M3V.txt'
 #txt_path_M3='code/part_2/data_for_part2/AD_Leo_M3V.txt'
-txt_path_M3='code/part_2/data_for_part2/bt_settle_cut/bt-settl_1066.dat_cut.txt'
+#txt_path_M3='code/part_2/data_for_part2/bt_settle_cut/bt-settl_1066.dat_cut.txt'
 txt_path_M2_5='models/other_V/Gl_381_M2.5V.txt'
 
 veg_J_M3=get_vegamag_all(filter_path_J,txt_path_M3)

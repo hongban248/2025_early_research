@@ -255,5 +255,17 @@ log likelyhood#再额外插值，再把模型wave转到数据wave上
 之后考虑加入covariance matrix
 
 
+3.11拿到了新数据，准备重做上述工作。
 
+3.12  H band可能还是有问题，2个月后拿一个新的数据对比，以后只分析K band
+pymultinest重做一版只有K band的，使用新数据，修改代码名称
+重新整理新数据的代码的结构，结果的结构，
 
+对于pymultinest，new_grid_point Teff取log10  H band 改K band再跑一遍，然后把数据微信发上去，保留数据结构，写一下如何改路径
+考虑pymultinest加入datas/coconuts-2A-SED.txt的内容
+再做一个merge，把IGRANS的数据也降采样到2000、6000再和IRTF对比
+去http://svo2.cab.inta-csic.es/svo/theory/fps/index.php?id=GAIA/GAIA0.G 找滤光片
+
+3.23
+重做了新的数据，bc不变，数据存在修正后的数据已保存到 code/part3_new_data/datas/H_BC.txt
+下面针对新数据的K波段进行chi2拟合,修改成了只针对K波段的存在 code/part3_new_data/outcomes/ck_gk_vr_vsini_modified.xlsx

@@ -110,82 +110,148 @@ def find_insert_position(arr, target):
     # 如果未找到目标数字，left 的位置即为插入位置
     return left
 
+def interpret_model_to_data(wl_mod,fl_mod,wl_data):
+    #额外插值，再把模型wave转到数据wave上   先只fits H band
+    fl_mod_spec_interp=np.interp(wl_data,wl_mod,fl_mod)
+    return fl_mod_spec_interp
+
 r_sun=6.957e10  # cm
+grid_points = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy', allow_pickle=True)
+fl_mod_spec_combo = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[1:]
+wl_mod_ori=np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[0]
+#fl_mod_spec_combo=fl_mod_spec_combo.T
+#更新过后跑3中模拟，H，K，H+K  #把数据载入单独放一块
+H_path='code/part_2/data_for_part2/H_BC.txt'
+wavelength_H,flux_H,error_H=get_txt(H_path)
+
+K_path='code/part_2/data_for_part2/K_BC.txt'
+wavelength_K,flux_K,error_K=get_txt(K_path)
+
+
 
 ## 5.1 parameters
-parameters = ['Teff', 'logg','meta','alpha','vr','vsini']
-num_grid_params = 4  #不包含vr和vsini
+parameters = ['Teff', 'logg','meta','vr','vsini','radius','log10b_spec']  #log10b_spec是模型不确定性的对数，单位是flux
+num_grid_params = 3  #不包含vr和vsini
 
 
 teff_min = 3000
 teff_max = 4000
-logg_min = 4    #3到5.5，guidpoint也要加3-5.5
+logg_min = 3    #3到5.5，guidpoint也要加3-5.5
 logg_max = 5.5
-meta_min = -0.5
-meta_max = -0.5
-alpha_min = 0.2 #改
-alpha_max = 0.2
-vr_min = 0.0  #-30----+30
-vr_max = 4.0
-vsini_min = 0.0 # 0-30
-vsini_max = 10.0
-# radius_min = 0.2  #注意这里是Rsun，不是Rjup
-# radius_max = 0.6# 使用了mamajek table来估计半径范围
+meta_min = -1
+meta_max = 0.5
+# alpha_min = 0.2 #改
+# alpha_max = 0.2
+vr_min = -30  #-30----+30
+vr_max = 30
+vsini_min =0 # 0-30
+vsini_max = 30
+radius_min = 0.2  #注意这里是Rsun，不是Rjup
+radius_max = 0.6# 使用了mamajek table来估计半径范围
+
+log10b_spec_min=2*np.log10(0.1*np.min(error_H))  #模型不应该小于这个值
+log10b_spec_max=2*np.log10(10*np.max(error_H))  #模型不应该大于这个值    
+
+
 
 def prior(cube, ndim, nparams):
     cube[0] = teff_min + (teff_max - teff_min) * cube[0]
     cube[1] = logg_min + (logg_max - logg_min) * cube[1]
     cube[2] = meta_min + (meta_max - meta_min) * cube[2]
-    cube[3] = alpha_min + (alpha_max - alpha_min) * cube[3]
-    cube[4] = vr_min + (vr_max - vr_min) * cube[4]
-    cube[5] = vsini_min + (vsini_max - vsini_min) * cube[5]
-    #cube[6] = radius_min + (radius_max - radius_min) * cube[6]
-
+    #cube[3] = alpha_min + (alpha_max - alpha_min) * cube[3]
+    cube[3] = vr_min + (vr_max - vr_min) * cube[3]
+    cube[4] = vsini_min + (vsini_max - vsini_min) * cube[4]
+    cube[5] = radius_min + (radius_max - radius_min) * cube[5]
+    cube[6] = log10b_spec_min + (log10b_spec_max - log10b_spec_min) * cube[6]
 #下面两行存疑
-grid_points = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy', allow_pickle=True)
-fl_mod_spec_combo = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[1:]
 
-#更新过后跑3中模拟，H，K，H+K
-K_path='code/part_2/data_for_part2/K_BC.txt'
-wavelength_K,flux_K,error_K=get_txt(K_path)
+
+print(fl_mod_spec_combo.shape,np.log10(fl_mod_spec_combo))
+#aaaaaa
+
+
+
+
 
 ### 6. log-likelihood
 def loglike_H(cube, ndim, nparams):
+
+    
+
     ## 6.1 current parameters
     teff = cube[0]
     logg = cube[1]
     meta = cube[2]
-    alpha = cube[3]
-    vr = cube[4]
-    vsini = cube[5]
-    #radius = cube[6]
-
+    #alpha = cube[3]
+    vr = cube[3]
+    vsini = cube[4]
+    radius = cube[5]
+    log10b_spec = cube[6]
+    
+    new_grid_points = np.copy(grid_points)
+    new_grid_points[:, 0] = np.log10(new_grid_points[:, 0])  # 对 Teff 取对数
     ## 6.2 spectra
     # 6.2.1 interpolation  #随便给参数得到模型
-    fl_mod_spec = 10 ** griddata(points = grid_points,
+    fl_mod_spec = 10 ** griddata(points = new_grid_points,
                                  values = np.log10(fl_mod_spec_combo),
                                  xi = np.array([ np.log10(teff), logg, meta ]),
                                  method = 'linear',
                                  fill_value = np.nan).reshape(-1)
+    
+
+    
+
     # 6.2.2 scaling by radius
-    fl_mod_spec = fl_mod_spec * (radius * r_sun / distance)**2  #距离10.88秒差距转换成厘米
+    #print(fl_mod_spec)
+    fl_mod_spec = fl_mod_spec * (radius * r_sun / (10.888 *u.pc ).to(u.cm))**2  #距离10.888秒差距转换成厘米，然后去除单位
     # => incorporate vr and vsini
-    wl_mod=vr_change(wl_mod,fl_mod_spec,vr)  #视向速度修正
+    #确保所有量都是纯 numpy 数组，使用 .value 剥离单位
+    fl_mod_spec = fl_mod_spec.value if hasattr(fl_mod_spec, 'value') else fl_mod_spec
+    flux_H_data = flux_H.value if hasattr(flux_H, 'value') else flux_H
+
+    
+
+    wl_mod=vr_change(wl_mod_ori,fl_mod_spec,vr)  #视向速度修正
     fl_mod_spec=rot_int_cmj(wl_mod,fl_mod_spec,vsini)  #旋转变宽
+
+    
+
+    
+
+    
+
+
     #额外插值，再把模型wave转到数据wave上   先只fits H band
+    fl_mod_spec=interpret_model_to_data(wl_mod,fl_mod_spec,wavelength_H)
     #########################################################################
+    
+    
 
 
     
 
 
-    print(len(fl_mod_spec),len(flux_K))
+
+    #print(len(fl_mod_spec),len(flux_K))
     # 6.2.3 likelihood 把模型和数据对比 flf2，err其实就是数据
-    #spec_sigma_squared = flerr_f2**2 + 10**log10b_spec
-    spec_sigma_squared= error_K**2
-    spec_logl = - 0.5 * np.sum( (fl_mod_spec - flux_K)**2 / spec_sigma_squared ) - 0.5 * np.sum( np.log(2 * np.pi * spec_sigma_squared) )
+    spec_sigma_squared = error_H**2 + 10**log10b_spec
+    #spec_sigma_squared= error_H**2
+    #spec_logl = - 0.5 * np.sum( (fl_mod_spec - flux_H)**2 / spec_sigma_squared ) - 0.5 * np.sum( np.log(2 * np.pi * spec_sigma_squared) )
+    
+    spec_sigma_sq = spec_sigma_squared.value if hasattr(spec_sigma_squared, 'value') else spec_sigma_squared
+    
+    # 现在进行无单位计算
+    spec_logl = -0.5 * np.sum((fl_mod_spec - flux_H_data)**2 / spec_sigma_sq) \
+                - 0.5 * np.sum(np.log(2 * np.pi * spec_sigma_sq))
     ## 6.4 final likelihood
     #return spec_logl + phot_w1_logl + phot_w2_logl + phot_irac36_logl + phot_irac45_logl
+
+    #print('1111')
+
+    
+        
+    print('teff, logg, meta, vr, vsini, radius, log10b_spec,log_l:', teff, logg, meta, vr, vsini, radius, log10b_spec,spec_logl)
+
     return spec_logl
 
 def loglike_K():
@@ -283,13 +349,15 @@ if __name__ == "__main1111__":
 
 if __name__ == "__main__":
 
-    output_path='code/part_2/outcome_for_part2/pymultinest_outcome/'
+
+    
+    output_path='code/part_2/outcome_for_part2/pymultinest_outcome/1/'
     n_params = len(parameters)
     json.dump(parameters, open(output_path + '_%s_params.json'%(str(time.time())), 'w'))
-    pymultinest.run(loglike, prior, n_params, 
+    pymultinest.run(loglike_H, prior, n_params, 
                     outputfiles_basename=output_path+'bt-settle-test-',
-                    resume = True, verbose = True,
-                    n_live_points = 4000, #越多越好 400测试，一般2000-4000
+                    resume = True, verbose = True,#换数据重跑要删output文件夹
+                    n_live_points = 400, #越多越好 400测试，一般2000-4000
                     sampling_efficiency = 0.8,
                     const_efficiency_mode=False)
     
