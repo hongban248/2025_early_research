@@ -1,7 +1,4 @@
-from astropy.io import fits
+import numpy as np
 
-fits_path='datas/SDCK_20240203_0071.flux_a0v.fits'
-with fits.open(fits_path) as hdul:
-    data = hdul[0].data
-    header = hdul[0].header
-    print(header)
+d=np.e**(21*np.log(10)/5)
+print(d)

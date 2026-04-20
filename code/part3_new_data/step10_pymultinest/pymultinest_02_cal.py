@@ -116,15 +116,15 @@ def interpret_model_to_data(wl_mod,fl_mod,wl_data):
     return fl_mod_spec_interp
 
 r_sun=6.957e10  # cm
-grid_points = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_points.npy', allow_pickle=True)
-fl_mod_spec_combo = np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[1:]
-wl_mod_ori=np.load('code/part_2/outcome_for_part2/pymultinest_outcome/bt-settle_full.npy', allow_pickle=True)[0]
+grid_points = np.load('code/part3_new_data/step10_pymultinest/bt-settle_points.npy', allow_pickle=True)
+fl_mod_spec_combo = np.load('code/part3_new_data/step10_pymultinest/bt-settle_full.npy', allow_pickle=True)[1:]
+wl_mod_ori=np.load('code/part3_new_data/step10_pymultinest/bt-settle_full.npy', allow_pickle=True)[0]
 #fl_mod_spec_combo=fl_mod_spec_combo.T
 #更新过后跑3中模拟，H，K，H+K  #把数据载入单独放一块
-H_path='code/part_2/data_for_part2/H_BC.txt'
-wavelength_H,flux_H,error_H=get_txt(H_path)
+# H_path='code/part3_new_data/step10_pymultinest/H_BC.txt'
+# wavelength_H,flux_H,error_H=get_txt(H_path)
 
-K_path='code/part_2/data_for_part2/K_BC.txt'
+K_path='code/part3_new_data/step10_pymultinest/K_BC.txt'
 wavelength_K,flux_K,error_K=get_txt(K_path)
 
 
@@ -149,8 +149,8 @@ vsini_max = 30
 radius_min = 0.2  #注意这里是Rsun，不是Rjup
 radius_max = 0.6# 使用了mamajek table来估计半径范围
 
-log10b_spec_min=2*np.log10(0.1*np.min(error_H))  #模型不应该小于这个值
-log10b_spec_max=2*np.log10(10*np.max(error_H))  #模型不应该大于这个值    
+log10b_spec_min=2*np.log10(0.1*np.min(error_K))  #模型不应该小于这个值
+log10b_spec_max=2*np.log10(10*np.max(error_K))  #模型不应该大于这个值    
 
 
 
@@ -174,7 +174,7 @@ print(fl_mod_spec_combo.shape,np.log10(fl_mod_spec_combo))
 
 
 ### 6. log-likelihood
-def loglike_H(cube, ndim, nparams):
+def loglike_K(cube, ndim, nparams):
 
     
 
@@ -207,58 +207,39 @@ def loglike_H(cube, ndim, nparams):
     # => incorporate vr and vsini
     #确保所有量都是纯 numpy 数组，使用 .value 剥离单位
     fl_mod_spec = fl_mod_spec.value if hasattr(fl_mod_spec, 'value') else fl_mod_spec
-    flux_H_data = flux_H.value if hasattr(flux_H, 'value') else flux_H
+    flux_K_data = flux_K.value if hasattr(flux_K, 'value') else flux_K
 
-    
 
     wl_mod=vr_change(wl_mod_ori,fl_mod_spec,vr)  #视向速度修正
     fl_mod_spec=rot_int_cmj(wl_mod,fl_mod_spec,vsini)  #旋转变宽
 
-    
-
-    
-
-    
-
 
     #额外插值，再把模型wave转到数据wave上   先只fits H band
-    fl_mod_spec=interpret_model_to_data(wl_mod,fl_mod_spec,wavelength_H)
+    fl_mod_spec=interpret_model_to_data(wl_mod,fl_mod_spec,wavelength_K)
     #########################################################################
     
-    
-
-
-    
-
-
 
     #print(len(fl_mod_spec),len(flux_K))
     # 6.2.3 likelihood 把模型和数据对比 flf2，err其实就是数据
-    spec_sigma_squared = error_H**2 + 10**log10b_spec
+    spec_sigma_squared = error_K**2 + 10**log10b_spec
     #spec_sigma_squared= error_H**2
     #spec_logl = - 0.5 * np.sum( (fl_mod_spec - flux_H)**2 / spec_sigma_squared ) - 0.5 * np.sum( np.log(2 * np.pi * spec_sigma_squared) )
     
     spec_sigma_sq = spec_sigma_squared.value if hasattr(spec_sigma_squared, 'value') else spec_sigma_squared
     
     # 现在进行无单位计算
-    spec_logl = -0.5 * np.sum((fl_mod_spec - flux_H_data)**2 / spec_sigma_sq) \
+    spec_logl = -0.5 * np.sum((fl_mod_spec - flux_K_data)**2 / spec_sigma_sq) \
                 - 0.5 * np.sum(np.log(2 * np.pi * spec_sigma_sq))
     ## 6.4 final likelihood
     #return spec_logl + phot_w1_logl + phot_w2_logl + phot_irac36_logl + phot_irac45_logl
 
     #print('1111')
-
-    
         
     print('teff, logg, meta, vr, vsini, radius, log10b_spec,log_l:', teff, logg, meta, vr, vsini, radius, log10b_spec,spec_logl)
 
     return spec_logl
 
-def loglike_K():
-    return 0.0
 
-def loglike():
-    return loglike_H()+loglike_K()
 
 
 import time
@@ -303,58 +284,15 @@ def fix_scientific_notation_inplace(filepath):
             f.write('\n'.join(fixed_lines))
 
 
-if __name__ == "__main1111__":
-
-    output_path='code/part_2/outcome_for_part2/pymultinest_outcome/'
-    n_params = len(parameters)
-    json.dump(parameters, open(output_path + '_%s_params.json'%(time.time()), 'w'))
-    pymultinest.run(loglike, prior, n_params, 
-                    outputfiles_basename=output_path+'bt-settle-test-',
-                    resume = True, verbose = True,
-                    n_live_points = 400,
-                    sampling_efficiency = 0.8,
-                    const_efficiency_mode=False)
-    
-    
-    
-    
-    analyzer = pymultinest.Analyzer(n_params = n_params,outputfiles_basename = output_path+'bt-settle-test-')
-    
-    
-    # 修复所有可能的输出文件
-    base_path = output_path + 'bt-settle-test-'
-    for suffix in ['post_equal_weights.dat', 'phys_live.points', 'live.points', 'ev.dat']:
-        file_path = base_path + suffix
-        fix_scientific_notation_inplace(file_path)
-    
-    #s = analyzer.get_stats()
-    analyzer = pymultinest.Analyzer(n_params = n_params,outputfiles_basename = output_path+'bt-settle-test-')
-    s = analyzer.get_stats()
-    json.dump(s, open(output_path + 'stats.json', 'w'), indent=4)
-    print('  marginal likelihood:')
-    print('    ln Z = %.1f +- %.1f' % (s['global evidence'], s['global evidence error']))
-    print('  parameters:')
-
-    for p, m in zip(parameters, s['marginals']):
-        lo, hi = m['1sigma']
-        med = m['median']
-        sigma = (hi - lo) / 2
-        if sigma == 0:
-            i = 3
-        else:
-            i = max(0, int(-np.floor(np.log10(sigma))) + 1)
-        fmt = '%%.%df' % i
-        fmts = '\t'.join(['    %-15s' + fmt + " +- " + fmt])
-        print(fmts % (p, med, sigma))
 
 if __name__ == "__main__":
 
 
     
-    output_path='code/part_2/outcome_for_part2/pymultinest_outcome/1/'
+    output_path='code/part3_new_data/step10_pymultinest/1/'
     n_params = len(parameters)
     json.dump(parameters, open(output_path + '_%s_params.json'%(str(time.time())), 'w'))
-    pymultinest.run(loglike_H, prior, n_params, 
+    pymultinest.run(loglike_K, prior, n_params, 
                     outputfiles_basename=output_path+'bt-settle-test-',
                     resume = True, verbose = True,#换数据重跑要删output文件夹
                     n_live_points = 400, #越多越好 400测试，一般2000-4000

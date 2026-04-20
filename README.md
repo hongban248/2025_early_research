@@ -269,3 +269,26 @@ pymultinest重做一版只有K band的，使用新数据，修改代码名称
 3.23
 重做了新的数据，bc不变，数据存在修正后的数据已保存到 code/part3_new_data/datas/H_BC.txt
 下面针对新数据的K波段进行chi2拟合,修改成了只针对K波段的存在 code/part3_new_data/outcomes/ck_gk_vr_vsini_modified.xlsx
+
+3.26
+pymultinest采样率2000live points
+1.针对pymultinest作图 模型和数据比较图，使用maximum对应的参数来画code/part3_new_data/step10_pymultinest/1/stats.json
+根据模型的参数弄出一个光谱，并保存,K和H+K分别作图,微信
+2.后面再画corner.py
+
+分析IGRINS+测光
+
+datas/coconuts-2A-gaia-xp.txt,单位：纳米，
+datas/coconuts-2A-SED.txt，单位A
+用SED前5个filter算出gaia xp对应的flux，每一个波段算一个比值，使用这个比值的average乘上gaia，得到最终纠正过的光谱
+把gaia-xp和K band合在一起做一个pymultinest，问一下gaia-xp的resolvtion，需要针对gaia-xp做一个新的npy模型
+希望把gaia-xp和K band+测光数据都加进去，需要三套不同分辨率的code/part3_new_data/step10_pymultinest/bt-settle_full.npy，
+测光对应的分辨率设为100，
+
+4月9号
+针对第三份数据再重做
+
+4.14根据SED制作了新的code/part3_new_data/datas/coconuts-2A-gaia-xp_vegamag.txt，
+并以此制作新的code/part3_new_data/step10_pymultinest/bt-settle_full_SED.npy
+
+4.20code/part3_new_data/step03_2_compare_with_template.py做了新旧数据和M3的对比

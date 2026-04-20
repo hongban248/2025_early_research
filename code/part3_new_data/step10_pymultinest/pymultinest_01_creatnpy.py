@@ -46,19 +46,22 @@ def parament_to_filename(teff, logg, meta,  mapfilepath="models/bt-settle/map"):
 
 
 
-def get_txt(file_path):
+def get_txt(file_path,a=0.8,b=2.5):
     try:
         wavelength, flux, error = np.loadtxt(file_path,
                                      comments='#',      # 跳过所有 # 开头的行
                                      unpack=True)       # 直接拆成三列数组
-        return wavelength[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)],flux[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)],error[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)]
+        return wavelength[find_insert_position(wavelength,a):find_insert_position(wavelength,b)],flux[find_insert_position(wavelength,a):find_insert_position(wavelength,b)],error[find_insert_position(wavelength,a):find_insert_position(wavelength,b)]
     except:
         wavelength, flux = np.loadtxt(file_path,
                                      comments='#',      # 跳过所有 # 开头的行
                            unpack=True)       # 直接拆成2列数组
         wavelength=wavelength/1e4
         e=flux
-        return wavelength[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)],flux[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)],e[find_insert_position(wavelength,0.8):find_insert_position(wavelength,2.5)]
+        return wavelength[find_insert_position(wavelength,a):find_insert_position(wavelength,b)],flux[find_insert_position(wavelength,a):find_insert_position(wavelength,b)],e[find_insert_position(wavelength,a):find_insert_position(wavelength,b)]
+    
+
+
 def find_insert_position(arr, target):
     """
     使用二分查找算法查找目标数字在升序数组中的插入位置。
@@ -84,16 +87,16 @@ def find_insert_position(arr, target):
     # 如果未找到目标数字，left 的位置即为插入位置
     return left
 
-def get_cut(file_path):
+def get_cut(file_path,a=0.8,b=2.5): #分辨率100
 
     # 设置波长和分辨率参数# Set the wavelength and resolution parameters
-    lammin = 0.8  # 最小波长 (μm)
-    lammax = 2.5   # 最大波长 (μm)
-    R = 45000      # 分辨率
+    lammin = a  # 最小波长 (μm)
+    lammax = b   # 最大波长 (μm)
+    R = 100      # 分辨率
 
 
     model_path=file_path
-    wave,flux,error=get_txt(model_path)
+    wave,flux,error=get_txt(model_path,a,b)
     #print(wave,len(wave),flux,len(flux))
 
 
@@ -250,7 +253,7 @@ if 1:
         teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
         file_path=parament_to_filename(teff_val, logg_val, meta_val)
-        raw_wl_mod,raw_fl_mod=get_cut(file_path)
+        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.336,1.02)  #先转换真空波长，再降低分辨率
         num_full=len(raw_wl_mod)
         break
 
@@ -265,7 +268,7 @@ if 1:
         teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
         file_path=parament_to_filename(teff_val, logg_val, meta_val)
-        raw_wl_mod,raw_fl_mod=get_cut(file_path)  #先转换真空波长，再降低分辨率
+        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.336,1.02)  #先转换真空波长，再降低分辨率
         #raw_wl_mod = mod_reader[:,0]
         raw_fl_mod = (raw_fl_mod * u.erg / u.s / u.cm**2 / u.Angstrom).to(u.erg / u.s / u.cm**2 / u.Angstrom).value
         #这一步要把模型的单位转换为数据的单位
@@ -301,7 +304,7 @@ if 1:
     #     wl_full.append(wl_mod[i])
     # wl_full=np.array(wl_full)
     ## 2.5 save model spectra and grid points
-    np.save('code/part3_new_data/step10_pymultinest/bt-settle_points.npy', np.array(grid_point_list))#要存
+    np.save('code/part3_new_data/step10_pymultinest/bt-settle_points_SED.npy', np.array(grid_point_list))#要存
     #np.save(main_path + 'processed/CEQ/ATMOP20_CEQ_spec.npy', np.vstack((wl_c2b, fl_spec_array)) )
     #np.save(main_path + 'processed/CEQ/ATMOP20_CEQ_phot.npy', np.vstack((wl_phot, fl_phot_array)) )
-    np.save('code/part3_new_data/step10_pymultinest/bt-settle_full.npy', np.vstack((wl_full, fl_full_array)) )
+    np.save('code/part3_new_data/step10_pymultinest/bt-settle_full_SED.npy', np.vstack((wl_full, fl_full_array)) )

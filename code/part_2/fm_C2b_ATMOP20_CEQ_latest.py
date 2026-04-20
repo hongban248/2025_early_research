@@ -141,8 +141,8 @@ if platform == 'lux':
 ## 2.1 parameter space #方阵
 teff_grid_points = np.array( list(np.arange(200, 601, 50)) + list(np.arange(700, 801, 100)) )
 logg_grid_points = np.arange(2.5, 5.51, 0.5)
-meta_grid_points =
-alpha_grid_points =
+meta_grid_points =1
+alpha_grid_points =1
 ## 2.2 grid points
 grid_point_list = []
 for teff in teff_grid_points:

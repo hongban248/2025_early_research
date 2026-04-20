@@ -339,12 +339,12 @@ if __name__=='__main__':
     #path='datas/20240203_0071/SDCH_20240203_0071.spec_a0v.fits'
     #path='datas/20240203_0071/SDCK_20240203_0071.spec_a0v.fits'
 
-    path='datas/SDCK_20240203_0071.flux_a0v.fits'
+    path='datas/data_3/SDCK_20240203_0071.flux_a0v.fits'
 
     wavelength,spectrum=get_data(path=path)
     var=get_var(path=path)
 
-    wavelength_id, spectrum_id, var_id=process_data(wavelength,spectrum,var,'code/part3_new_data/datas/record_wave_K.txt')
+    wavelength_id, spectrum_id, var_id=process_data(wavelength,spectrum,var,'code/part3_new_data/datas_3/record_wave_K.txt')
     wavelength_id, spectrum_id, var_id=sort(wavelength_id, spectrum_id, var_id)
 
     

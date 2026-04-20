@@ -68,7 +68,7 @@ def plot_with_color_and_dev(wavelength,spectrum,var):
 
 if __name__=='__main__':
     
-    path='datas/SDCH_20240203_0071.flux_a0v.fits'
+    path='datas/data_3/SDCH_20240203_0071.flux_a0v.fits'
     #path='datas/20240203_0071/SDCK_20240203_0071.spec_a0v.fits'
 
 
