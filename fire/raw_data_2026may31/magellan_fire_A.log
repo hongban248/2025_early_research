@@ -1,0 +1,14 @@
+------------------------------------------------------
+
+This log was generated with version 1.12.2 of PypeIt
+
+You are using scipy version=1.10.1
+You are using numpy version=1.24.4
+You are using astropy version=5.2.2
+
+------------------------------------------------------
+
+[INFO]    :: inputfiles.py 117 from_file() - Loading the reduction file
+
+[ERROR]   :: inputfiles.py 93 readlines() - The filename does not exist -
+             magellan_fire_A.pypeit

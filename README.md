@@ -288,7 +288,74 @@ datas/coconuts-2A-SED.txt，单位A
 4月9号
 针对第三份数据再重做
 
-4.14根据SED制作了新的code/part3_new_data/datas/coconuts-2A-gaia-xp_vegamag.txt，
+4.14根据xp制作了新的code/part3_new_data/datas/coconuts-2A-gaia-xp_vegamag.txt，
 并以此制作新的code/part3_new_data/step10_pymultinest/bt-settle_full_SED.npy
 
 4.20code/part3_new_data/step03_2_compare_with_template.py做了新旧数据和M3的对比
+code/part3_new_data/step10_pymultinest/pymultinest_04_get_data.py做了最似然模型和数据的对比，用了取巧的方法
+
+
+4.23可以做一个SED+H+K模型和数据的对比
+
+code/part3_new_data/step10_pymultinest/3/bt-settle-test-post_equal_weights.dat 前面列对应参数，最后一列对应likelyhood，从这个文件里面可以自动读取出最大的likelyhood和对应的参数
+然后把数据都载入进去
+然后把最大似然的模型参数填入griddata函数，然后填入R，vr，vsini，在插值之前保存一下model。插值后保存模型数据，针对H和K可以做OC图
+可以把模型在每一个波段的测光也计算出来，最终画model+SED+HK，下图为测光-model，H-model，K-model
+
+
+加入SED：再弄一套npy，波长范围取决于SED 0.3微米-6微米，resolution 可以100或50，然后拿模型数据生成一个测光
+本周：加测光，了解模型哪里仍有问题；找到logg的合理范围，使用演化模型，读文章section5
+做第四版数据，看看有没有斜率问题
+5.7做第四版数据,仍然有斜率问题，但似乎更接近m1？
+
+6.2进行HiRes模型
+分辨率10e6数量级   该模型的：BUNIT   = 'erg/s/cm^2/cm'，其他地方：BUNIT   = 'erg s-1 cm-2 micron-1' / Flux Units ,为真空波长，无需额外处理
+
+
+6.4再跑一遍HiRes的，改文件名称，画图。
+
+
+新数据处理：MAGELLAN /fire
+模式1.分辨率300，0.8微米-2.5微米 不存在order问题
+模式2.分辨率6000  
+pypeit
+先学习教程，然后再处理数据
+下载
+https://www.dropbox.com/scl/fo/1i9f21qwcd8ft7ospxxve/AJ9GG-e3NQGYbofj_UF5y3I?rlkey=kl0gaprlp6f1cgl4hqv9hqk7y&dl=0
+
+红框框起来的数据是需要的
+74-77   COCONUTS-2A: science target
+78         NeArNe: wavelength calibration for COCONUTS-2A
+79-86   HD62139: A0V telluric standard star
+87         NeArNe: wavelength calibration for HD62139
+
+magellan_fire
+MagellanFIREEchelleSpectrograph
+MAGELLAN
+FIRE
+
+pypeit_identify Calibrations/Arc_A_0_DET01.fits Calibrations/Slits_A_0_DET01.fits.gz   --lamps NeI,ArI -s
+
+telluric correction
+
+7.29更新
+pypeit→fluxing→coadd 1D→telluric correction
+
+7.30    修改calib_id， science 0110  standard 2332  其它也用ABBA   所有标准星和目标单独分开处理
+ 把8个标准星都flux处理，看看响应函数,  可以多给，没必要   
+ 可以针对fire数据处理步骤写一个note
+ 下周开会
+
+ https://iopscience.iop.org/article/10.3847/1538-4357/ad06ba/pdf
+ 2.1    研究pypeit_flux_setup
+ 看看https://github.com/pypeit/PypeIt-development-suite的
+
+10.6
+得到了fire数据见fire/coadded_spectrum.txt
+接下来对比fire，IGRINS,ADleo数据，1.52-1.7
+
+
+
+
+
+

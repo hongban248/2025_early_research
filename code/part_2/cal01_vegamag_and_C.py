@@ -89,6 +89,7 @@ def get_vegamag_all(filter_path,txt_path,constant=1.0):
     wavelength, flux, error = get_txt(txt_path)
     wavelength, flux, error = remove_negative(wavelength, flux, error)
     veg=get_vegamag(wavelength, flux*constant, filter_path)
+    print("原始星等AAA：", veg)
     return veg
 
 

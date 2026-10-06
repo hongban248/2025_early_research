@@ -84,6 +84,7 @@ def loglike(cube, ndim, nparams):
     phot_irac36_logl = -0.5 * (fl_irac36_mod - fl_irac36)**2 / flerr_irac36**2 - 0.5 * np.sum( np.log(2 * np.pi * flerr_irac36**2) )
     phot_irac45_logl = -0.5 * (fl_irac45_mod - fl_irac45)**2 / flerr_irac45**2 - 0.5 * np.sum( np.log(2 * np.pi * flerr_irac45**2) )'''
     ## 6.4 final likelihood
+    
     #return spec_logl + phot_w1_logl + phot_w2_logl + phot_irac36_logl + phot_irac45_logl
     return spec_logl
 

@@ -318,13 +318,13 @@ if __name__ == "__main__":
 
     # model_file_H='models/bt-settle_H_vr_vsini/bt-settl_131.dat.txt_vr0_vsini10.txt'
     # model_file_K='models/bt-settle_K_vr_vsini/bt-settl_131.dat.txt_vr0_vsini10.txt'
-    ck=5.82914E-19
+    ck=5.79314E-19
 
-    model_file='models/bt-settle/bt-settl_1593.dat.txt'
+    model_file='models/bt-settle/bt-settl_1754.dat.txt'
     #wavelength_data_H,flux_data_H,error_data_H=sort(*get_txt(data_file_H))
     wavelength_data_K,flux_data_K,error_data_K=sort(*get_txt(data_file_K))
     #wavelength_model_temp=sort(*get_cut(model_file),np.zeros(len(get_cut(model_file)[0])))
-    wavelength_model,flux_model=modfile_model(model_file,vr=2,vsini=8)
+    wavelength_model,flux_model=modfile_model(model_file,vr=2,vsini=0)
 
     #wavelength_model_temp,flux_model_temp=modfile_model(model_file,vr=0,vsini=0)
     #print(flux_model_temp)

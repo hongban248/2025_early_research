@@ -338,10 +338,10 @@ def make_csv(path, wavelength, spectrum, dev):
 
 if __name__=='__main__':
     
-    path='datas/data_3/SDCH_20240203_0071.flux_a0v.fits'
+    path='datas/data_5/SDCH_20240203_0071.flux_a0v.fits'
     #path='datas/data_3/SDCK_20240203_0071.flux_a0v.fits'
 
-    record_path='code/part3_new_data/datas_3/record_wave_H.txt'
+    record_path='code/part3_new_data/datas_5/record_wave_H.txt'
     #record_path='code/part3_new_data/datas_3/record_wave_K.txt'
 
 
@@ -350,7 +350,7 @@ if __name__=='__main__':
     wavelength,spectrum=get_data(path=path)
     var=get_var(path=path)
 
-    wavelength_id, spectrum_id, var_id=process_data(wavelength,spectrum,var,'code/part3_new_data/outcomes_3/back1_H',record_path)
+    wavelength_id, spectrum_id, var_id=process_data(wavelength,spectrum,var,'code/part3_new_data/outcomes_5/back1_H',record_path)
     wavelength_id, spectrum_id, var_id=sort(wavelength_id, spectrum_id, var_id)
 
-    make_csv('code/part3_new_data/outcomes_3/back1_H/outcome.csv', wavelength_id, spectrum_id, var_id)
+    make_csv('code/part3_new_data/outcomes_5/back1_H/outcome.csv', wavelength_id, spectrum_id, var_id)

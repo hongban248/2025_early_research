@@ -92,7 +92,7 @@ def get_cut(file_path,a=0.8,b=2.5): #分辨率100
     # 设置波长和分辨率参数# Set the wavelength and resolution parameters
     lammin = a  # 最小波长 (μm)
     lammax = b   # 最大波长 (μm)
-    R = 100      # 分辨率
+    R = 50      # 分辨率
 
 
     model_path=file_path
@@ -253,7 +253,7 @@ if 1:
         teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
         file_path=parament_to_filename(teff_val, logg_val, meta_val)
-        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.336,1.02)  #先转换真空波长，再降低分辨率
+        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.3,6)  #先转换真空波长，再降低分辨率
         num_full=len(raw_wl_mod)
         break
 
@@ -268,7 +268,7 @@ if 1:
         teff_val, logg_val,meta_val = grid_point_list[index]
         #mod_reader = np.genfromtxt(model_path + 'CEQ/spec_T%d_lg%.1f_CEQ.txt'%(teff_val, logg_val), skip_header=2)
         file_path=parament_to_filename(teff_val, logg_val, meta_val)
-        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.336,1.02)  #先转换真空波长，再降低分辨率
+        raw_wl_mod,raw_fl_mod=get_cut(file_path,0.3,6)  #先转换真空波长，再降低分辨率
         #raw_wl_mod = mod_reader[:,0]
         raw_fl_mod = (raw_fl_mod * u.erg / u.s / u.cm**2 / u.Angstrom).to(u.erg / u.s / u.cm**2 / u.Angstrom).value
         #这一步要把模型的单位转换为数据的单位
@@ -304,7 +304,7 @@ if 1:
     #     wl_full.append(wl_mod[i])
     # wl_full=np.array(wl_full)
     ## 2.5 save model spectra and grid points
-    np.save('code/part3_new_data/step10_pymultinest/bt-settle_points_SED.npy', np.array(grid_point_list))#要存
+    np.save('code/part3_new_data/step10_pymultinest/bt-settle_points_SED_true.npy', np.array(grid_point_list))#要存
     #np.save(main_path + 'processed/CEQ/ATMOP20_CEQ_spec.npy', np.vstack((wl_c2b, fl_spec_array)) )
     #np.save(main_path + 'processed/CEQ/ATMOP20_CEQ_phot.npy', np.vstack((wl_phot, fl_phot_array)) )
-    np.save('code/part3_new_data/step10_pymultinest/bt-settle_full_SED.npy', np.vstack((wl_full, fl_full_array)) )
+    np.save('code/part3_new_data/step10_pymultinest/bt-settle_full_SED_true.npy', np.vstack((wl_full, fl_full_array)) )

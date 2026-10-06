@@ -118,7 +118,7 @@ def interp_1d(x, y, x_new, kind='linear', extrapolate=False):
         )
         return f(x_new)
 
-def process(wavelength,flux,error,wavelength1,flux1,error1,wavelength2,flux2,error2,modes_name,save_dir="code/part3_new_data/outcomes_3/IRTF_compare"):
+def process(wavelength,flux,error,wavelength1,flux1,error1,wavelength2,flux2,error2,modes_name,save_dir="code/part3_new_data/outcomes_5/IRTF_compare"):
     flux1_scale=[]
     flux2_scale=[]
     error1_scale=[]
@@ -197,8 +197,8 @@ def process(wavelength,flux,error,wavelength1,flux1,error1,wavelength2,flux2,err
 if __name__ == '__main__':
 
     # 1. 观测文件固定
-    obv_path1 = 'code/part3_new_data/outcomes_3/back1_H/outcome.csv'
-    obv_path2 = 'code/part3_new_data/outcomes_3/back1_K/outcome.csv'
+    obv_path1 = 'code/part3_new_data/outcomes_5/back1_H/outcome.csv'
+    obv_path2 = 'code/part3_new_data/outcomes_5/back1_K/outcome.csv'
 
     # 2. 读取并裁剪 H、K 波段（只读一次，后面所有模型共用）
     datas1 = pd.read_csv(obv_path1)

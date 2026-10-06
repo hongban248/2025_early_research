@@ -207,15 +207,15 @@ def process3(wavelength,flux,error,wavelength1,flux1,error1,template_wavelength,
     
 
     plt.figure(figsize=(20, 15))
-    plt.plot(wavelength1, flux1, color='red', label='obv2')
+    plt.plot(wavelength1, flux1, color='red', label='obv2_second_data')
     plt.fill_between(wavelength1, flux1 - error1, flux1 + error1, color='red', alpha=0.3, label='obv2 error')
     #plt.plot(wavelength2, flux2, color='green', label='K波段')
-    plt.plot(wavelength, flux, color='blue', linestyle='--', label='obv1')
-    plt.plot(template_wavelength, template_flux*scale_template, color='black',  label='template')
+    plt.plot(wavelength, flux, color='blue', linestyle='--', label='obv1_third_data')
+    plt.plot(template_wavelength, template_flux*scale_template, color='black',  label='template_IRTF_M3', linewidth=5)
     plt.xlabel('Wavelength (μm)')
     plt.ylabel('Flux (normalized)')
     plt.tight_layout()
-    plt.legend()
+    plt.legend(fontsize=20)
     plt.show()
 
 if __name__ == '__main__':

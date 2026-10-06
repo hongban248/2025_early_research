@@ -157,8 +157,8 @@ def process2(wavelength,flux,error,wavelength1,flux1,error1):
 if __name__ == '__main__':
 
     # 1. 观测文件固定
-    obv_path1 = 'code/part_2/outcome_for_part2/SDCK_20240203_0071_middle.back1/outcome.csv'
-    obv_path2 = 'code/part_2/outcome_for_part2/SDCK_20240203_0071_middle.back2/outcome.csv'
+    obv_path1 = 'code/part_2/outcome_for_part2/SDCH_20240203_0071_middle.back1/outcome.csv'
+    obv_path2 = 'code/part_2/outcome_for_part2/SDCH_20240203_0071_middle.back2/outcome.csv'
 
     # 2. 读取并裁剪 H、K 波段（只读一次，后面所有模型共用）
     datas1 = pd.read_csv(obv_path1)
