@@ -44,7 +44,7 @@ def get_txt_fire(file_path):
         wavelength, flux, error = np.loadtxt(file_path,
                                      comments='#',      # 跳过所有 # 开头的行
                                      unpack=True)       # 直接拆成三列数组
-        wavelength=wavelength/1e4
+        wavelength=wavelength/1
         return wavelength[find_insert_position(wavelength,1.5):find_insert_position(wavelength,2.5)],flux[find_insert_position(wavelength,1.5):find_insert_position(wavelength,2.5)],error[find_insert_position(wavelength,1.5):find_insert_position(wavelength,2.5)]
     except:
         wavelength, flux = np.loadtxt(file_path,
@@ -229,7 +229,7 @@ fire_path='fire/coadded_spectrum.txt'
 #wave_fire, flux_fire, var_fire = read_fire1(fire_path)#读取tellricorr之后的
 wave_fire, flux_fire, var_fire = get_txt_fire(fire_path) #读取tellricorr之后的
 
-
+#wave_fire,flux_fire,var_fire=read_fire2('/mnt/disk1/myresource/fire_reduction/magellan_fire_long_A/74/spec1d_fire_0074-COCONUTS-2A_FIRE_85970523T110233.000.fits') #读取tellricorr之后的
 
 
 
@@ -240,9 +240,11 @@ K_wave, K_flux, K_error = get_txt(K_path)
 
 leo_path='code/part3_new_data/datas/AD_Leo_M3V.txt'
 leo_wave, leo_flux, leo_error = get_txt(leo_path)
-leo_wave=leo_wave[find_insert_position(leo_wave,1.52):find_insert_position(leo_wave,1.7)]
-leo_flux=leo_flux[find_insert_position(leo_wave,1.52):find_insert_position(leo_wave,1.7)]
-leo_error=leo_error[find_insert_position(leo_wave,1.52):find_insert_position(leo_wave,1.7)]
+a=1.52
+b=1.70
+leo_wave=leo_wave[find_insert_position(leo_wave,a):find_insert_position(leo_wave,b)]
+leo_flux=leo_flux[find_insert_position(leo_wave,a):find_insert_position(leo_wave,b)]
+leo_error=leo_error[find_insert_position(leo_wave,a):find_insert_position(leo_wave,b)]
 
 compare(wave_fire, flux_fire,H_wave, H_flux,K_wave, K_flux,leo_wave, leo_flux)
 
