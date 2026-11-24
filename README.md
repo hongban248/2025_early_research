@@ -355,6 +355,7 @@ pypeit→fluxing→coadd 1D→telluric correction
 接下来对比fire，IGRINS,ADleo数据，1.52-1.7
 
 下次开会10.14早八
+111
 
 
 
